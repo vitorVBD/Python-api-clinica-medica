@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import sessionmaker
 from repositories import Secretary_Respository
-from models import Secretary
+from repositories.Secretary_Respository import Secretary
 from sqlalchemy.exc import IntegrityError
 
 class Secretary_Service:

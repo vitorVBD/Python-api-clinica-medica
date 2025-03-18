@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.future import select
 from sqlalchemy.orm import sessionmaker
-from models import Doctor
+from models.Doctor import Doctor
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import select
 
@@ -35,14 +35,14 @@ class Doctor_Repository:
         doctor = result.scalars().first()
         if not doctor:
             raise ValueError(f"Médico com ID {doctor_id} não encontrado")
-        return await doctor
+        return doctor
 
     async def get_by_crm(self, crm: str) -> Doctor:
         result = await self.session.execute(select(Doctor).filter(Doctor.crm == crm))
         doctor = result.scalars().first()
         if not doctor:
             raise ValueError(f"Médico com CRM {crm} não encontrado")
-        return await doctor
+        return doctor
 
     async def get_all(self) -> list:
         result = await self.session.execute(select(Doctor))

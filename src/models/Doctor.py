@@ -1,9 +1,8 @@
 import re
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.orm import validates
 from database.database import db as Base
-import validators
 
 class Doctor(Base):
     __tablename__ = 'medicos'
@@ -15,7 +14,7 @@ class Doctor(Base):
     specialty = Column(String(100), nullable=True)
     phone = Column(String(15), nullable=False, unique=True)
     crm = Column(String(100), nullable=False, unique=True)
-    created_at = Column(DateTime, default=datetime.timezone.utc)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     @validates('name')
     def validate_name(self, key, name):

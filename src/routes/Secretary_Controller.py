@@ -1,19 +1,18 @@
-from fastapi import Depends, FastAPI, HTTPException
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter, Depends, HTTPException
 from services.Secretary_Service import Secretary_Service
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import sessionmaker
 from database.database import engine
 from auth.security import hash_password
 
-app = FastAPI()
+router = APIRouter()
 
 async def get_session():
     async_session = sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
     async with async_session() as session:
         yield session
 
-@app.post("/secretaries/")
+@router.post("/secretaries/")
 async def create_secretary(name: str, birth_date: str, password: str, phone: str, email: str, session: AsyncSession = Depends(get_session)):
     hashed_password = hash_password(password)
     secretary_service = Secretary_Service(session)
@@ -23,7 +22,7 @@ async def create_secretary(name: str, birth_date: str, password: str, phone: str
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.get("/secretaries/{secretary_id}")
+@router.get("/secretaries/{secretary_id}")
 async def get_secretary_by_id(secretary_id: int, session: AsyncSession = Depends(get_session)):
     secretary_service = Secretary_Service(session)
     try:
@@ -32,7 +31,7 @@ async def get_secretary_by_id(secretary_id: int, session: AsyncSession = Depends
     except Exception as e:
         raise HTTPException(status_code=404, detail=str(e))
 
-@app.get("/secretaries/email/{email}")
+@router.get("/secretaries/email/{email}")
 async def get_secretary_by_email(email: str, session: AsyncSession = Depends(get_session)):
     secretary_service = Secretary_Service(session)
     try:
@@ -41,7 +40,7 @@ async def get_secretary_by_email(email: str, session: AsyncSession = Depends(get
     except Exception as e:
         raise HTTPException(status_code=404, detail=str(e))
 
-@app.get("/secretaries/")
+@router.get("/secretaries/")
 async def get_all_secretaries(session: AsyncSession = Depends(get_session)):
     secretary_service = Secretary_Service(session)
     try:
@@ -50,7 +49,7 @@ async def get_all_secretaries(session: AsyncSession = Depends(get_session)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.put("/secretaries/{secretary_id}")
+@router.put("/secretaries/{secretary_id}")
 async def update_secretary(secretary_id: int, name: str = None, birth_date: str = None, hashed_password: str = None, phone: str = None, email: str = None, session: AsyncSession = Depends(get_session)):
     secretary_service = Secretary_Service(session)
     try:
@@ -59,7 +58,7 @@ async def update_secretary(secretary_id: int, name: str = None, birth_date: str 
     except Exception as e:
         raise HTTPException(status_code=404, detail=str(e))
 
-@app.delete("/secretaries/{secretary_id}")
+@router.delete("/secretaries/{secretary_id}")
 async def delete_secretary(secretary_id: int, session: AsyncSession = Depends(get_session)):
     secretary_service = Secretary_Service(session)
     try:

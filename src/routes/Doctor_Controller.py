@@ -1,12 +1,11 @@
-from fastapi import Depends, FastAPI, HTTPException
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter, Depends, HTTPException
 from services.Doctor_Service import DoctorService
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import sessionmaker
 from database.database import engine
 from auth.security import hash_password
 
-app = FastAPI()
+router = APIRouter()
 
 async def get_session():
     async_session = sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
@@ -14,7 +13,7 @@ async def get_session():
         yield session
 
 
-@app.post("/post_doctors/")
+@router.post("/post_doctors/")
 async def create_doctor(name: str, email: str, password: str, specialty: str, phone: str, crm: str, session: AsyncSession = Depends(get_session)):
     hashed_password = hash_password(password)
     doctor_service = DoctorService(session)
@@ -27,7 +26,7 @@ async def create_doctor(name: str, email: str, password: str, specialty: str, ph
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.get("/doctors/{doctor_id}")
+@router.get("/doctors/{doctor_id}")
 async def get_doctor_by_id(doctor_id: int, session: AsyncSession = Depends(get_session)):
     doctor_service = DoctorService(session)
     try:
@@ -39,7 +38,7 @@ async def get_doctor_by_id(doctor_id: int, session: AsyncSession = Depends(get_s
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.get("/doctors/crm/{crm}")
+@router.get("/doctors/crm/{crm}")
 async def get_doctor_by_crm(crm: str, session: AsyncSession = Depends(get_session)):
     doctor_service = DoctorService(session)
     try:
@@ -51,7 +50,7 @@ async def get_doctor_by_crm(crm: str, session: AsyncSession = Depends(get_sessio
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.get("/doctors/")
+@router.get("/doctors/")
 async def get_all_doctors(session: AsyncSession = Depends(get_session)):
     doctor_service = DoctorService(session)
     try:
@@ -61,7 +60,7 @@ async def get_all_doctors(session: AsyncSession = Depends(get_session)):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.put("/doctors/{doctor_id}")
+@router.put("/doctors/{doctor_id}")
 async def update_doctor(doctor_id: int, name: str = None, email: str = None, specialty: str = None,
                          phone: str = None, crm: str = None, session: AsyncSession = Depends(get_session)):
     doctor_service = DoctorService(session)
@@ -74,7 +73,7 @@ async def update_doctor(doctor_id: int, name: str = None, email: str = None, spe
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.delete("/doctors/{doctor_id}")
+@router.delete("/doctors/{doctor_id}")
 async def delete_doctor(doctor_id: int, session: AsyncSession = Depends(get_session)):
     doctor_service = DoctorService(session)
     try:

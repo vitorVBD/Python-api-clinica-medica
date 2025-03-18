@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.future import select
 from sqlalchemy.orm import sessionmaker
-from models import Patient
+from models.Patient import Patient
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import select
 
@@ -37,14 +37,14 @@ class Patient_Repository:
         patient = result.scalars().first()
         if not patient:
             raise ValueError(f"Paciente com ID {patient_id} não encontrado")
-        return await patient
+        return patient
     
     async def get_by_cpf(self, cpf: str) -> Patient:
         result = await self.session.execute(select(Patient).filter(Patient.cpf == cpf))
         patient = result.scalars().first()
         if not patient:
             raise ValueError(f"Paciente com CPF {cpf} não encontrado")
-        return await patient
+        return patient
     
     async def get_all(self) -> list:
         result = await self.session.execute(select(Patient))

@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.future import select
 from sqlalchemy.orm import sessionmaker
-from models import Secretary
+from models.Secretary import Secretary
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import select
 
@@ -36,14 +36,14 @@ class Secretary_Repository:
         secretary = result.scalars().first()
         if not secretary:
             raise ValueError(f"Secretária com ID {secretary_id} não encontrada")
-        return await secretary
+        return secretary
     
     async def get_by_email(self, email: str) -> Secretary:
         result = await self.session.execute(select(Secretary).filter(Secretary.email == email))
         secretary = result.scalars().first()
         if not secretary:
             raise ValueError(f"Secretária com email {email} não encontrada")
-        return await secretary
+        return secretary
     
     async def get_all(self) -> list:
         result = await self.session.execute(select(Secretary))

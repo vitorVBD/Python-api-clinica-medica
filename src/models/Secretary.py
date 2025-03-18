@@ -1,6 +1,6 @@
 import re
-from datetime import datetime
-from sqlalchemy import Column, Integer, String, Date
+from datetime import datetime, timezone
+from sqlalchemy import Column, Integer, String, Date, DateTime
 from sqlalchemy.orm import validates
 from database.database import db as Base
 
@@ -13,7 +13,7 @@ class Secretary(Base):
     password = Column(String(255), nullable=False)
     phone = Column(String(15), nullable=False, unique=True)
     email = Column(String(100), nullable=False, unique=True)
-    created_at = Column(Date, default=datetime.now)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     @validates('name')
     def validate_name(self, key, name):

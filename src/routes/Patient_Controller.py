@@ -1,12 +1,11 @@
-from fastapi import Depends, FastAPI, HTTPException
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter, Depends, HTTPException
 from services.Patient_Service import Patient_Service
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import sessionmaker
 from database.database import engine
 
 
-app = FastAPI()
+router = APIRouter()
 
 async def get_session():
     async_session = sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
@@ -14,7 +13,7 @@ async def get_session():
         yield session
 
 
-@app.post("/post_patients/")
+@router.post("/post_patients/")
 async def create_patient(name: str, cpf: str, birth_date: str, medical_insurance: str, city: str, email: str, phone: str, session: AsyncSession = Depends(get_session)):
     patient_service = Patient_Service(session)
     try:
@@ -26,7 +25,7 @@ async def create_patient(name: str, cpf: str, birth_date: str, medical_insurance
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.get("/patients/{patient_id}")
+@router.get("/patients/{patient_id}")
 async def get_patient_by_id(patient_id: int, session: AsyncSession = Depends(get_session)):
     patient_service = Patient_Service(session)
     try:
@@ -38,7 +37,7 @@ async def get_patient_by_id(patient_id: int, session: AsyncSession = Depends(get
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.get("/patients/cpf/{cpf}")
+@router.get("/patients/cpf/{cpf}")
 async def get_patient_by_cpf(cpf: str, session: AsyncSession = Depends(get_session)):
     patient_service = Patient_Service(session)
     try:
@@ -50,7 +49,7 @@ async def get_patient_by_cpf(cpf: str, session: AsyncSession = Depends(get_sessi
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.get("/patients/")
+@router.get("/patients/")
 async def get_all_patients(session: AsyncSession = Depends(get_session)):
     patient_service = Patient_Service(session)
     try:
@@ -60,7 +59,7 @@ async def get_all_patients(session: AsyncSession = Depends(get_session)):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.put("/patients/{patient_id}")
+@router.put("/patients/{patient_id}")
 async def update_patient(patient_id: int, name: str = None, cpf: str = None, birth_date: str = None,
                          medical_insurance: str = None, city: str = None, email: str = None, phone: str = None, session: AsyncSession = Depends(get_session)):
     patient_service = Patient_Service(session)
@@ -73,7 +72,7 @@ async def update_patient(patient_id: int, name: str = None, cpf: str = None, bir
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.delete("/patients/{patient_id}")
+@router.delete("/patients/{patient_id}")
 async def delete_patient(patient_id: int, session: AsyncSession = Depends(get_session)):
     patient_service = Patient_Service(session)
     try:

@@ -1,9 +1,12 @@
 from fastapi import FastAPI, Depends
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
-from database.database import SessionLocal, engine
+from database.database import SessionLocal
+from routes.router import router
 
 app = FastAPI()
+
+app.include_router(router)
 
 async def get_db():
     async with SessionLocal() as session:

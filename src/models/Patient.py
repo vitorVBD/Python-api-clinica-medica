@@ -1,6 +1,6 @@
 import re
-from datetime import datetime
-from sqlalchemy import Column, Integer, String, Date
+from datetime import datetime, timezone
+from sqlalchemy import Column, Integer, String, DateTime, Date
 from sqlalchemy.orm import validates
 from database.database import db as Base
 
@@ -15,7 +15,7 @@ class Patient(Base):
     city = Column(String(100), nullable=False)
     email = Column(String(100), unique=True, nullable=True)
     phone = Column(String(15), nullable=False, unique=True)
-    created_at = Column(Date, default=datetime.timezone.utc)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     @validates('name')
     def validate_name(self, key, name):

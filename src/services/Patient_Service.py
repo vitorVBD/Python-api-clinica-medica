@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import sessionmaker
 from repositories import Patient_Repository
-from models import Patient
+from repositories.Patient_Repository import Patient
 from sqlalchemy.exc import IntegrityError
 
 
